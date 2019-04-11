@@ -49,7 +49,7 @@
 	"message": "apilog",
 	"context": {
 		"apitrace": {
-			"Host": "cactusserver-mall.test",
+			"Host": "server.test",
 			"Method": "GET",
 			"Headers": "{\"connection\":[\"keep-alive\"],\"accept\":[\"*/*\"],\"accept-encoding\":[\"gzip, deflate\"],\"user-agent\":[\"python-requests/2.21.0\"],\"host\":[\"cactusserver-mall.test\"],\"content-length\":[\"\"],\"content-type\":[\"\"]}",
 			"PathInfo": "/version",
