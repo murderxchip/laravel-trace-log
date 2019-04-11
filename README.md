@@ -8,7 +8,7 @@
    "repositories": [
             {
                 "type": "git",
-                "url": "https://git.100tal.com/jituan_kaifangpingtai_mofaxiao_ms/tracelog.git"
+                "url": "https://github.com/murderxchip/laravel-trace-log.git"
             }
        ],
    ```
