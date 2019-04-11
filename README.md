@@ -80,7 +80,7 @@
 	"Trace": {
 		"TraceId": "trace:15549636365caedcb4de348",
 		"TraceIndex": "0.1",
-		"TracePath": "/Mall"
+		"TracePath": "/Path"
 	}
 }
 ```
