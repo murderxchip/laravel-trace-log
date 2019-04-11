@@ -1,0 +1,25 @@
+{
+    "name": "cactus/tracelog",
+    "description": "未来魔法校链路日志SDK",
+    "type": "library",
+    "version": "1.0.1",
+    "require": {
+        "laravel/lumen-framework": "5.5.*",
+        "guzzlehttp/guzzle": "~6.0",
+        "illuminate/support": "5.5.*",
+        "monolog/monolog": "~1.24"
+    },
+    "authors": [
+        {
+            "name": "qinming",
+            "email": "qinming@100tal.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Cactus\\Trace\\": "src",
+            "Cactus\\Trace\\Common\\": "src/common"
+        }
+    }
+}
