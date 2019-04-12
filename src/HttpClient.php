@@ -12,8 +12,6 @@ namespace Cactus\Trace;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\RequestInterface;
 
 class HttpClient extends Client

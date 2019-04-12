@@ -1,8 +1,8 @@
 {
-    "name": "cactus/tracelog",
-    "description": "未来魔法校链路日志SDK",
+    "name": "murderxchip/trace",
+    "description": "Laravel/Lumen 链路日志SDK",
     "type": "library",
-    "version": "1.0.1",
+    "version": "v1.0.1",
     "require": {
         "laravel/lumen-framework": "5.5.*",
         "guzzlehttp/guzzle": "~6.0",
