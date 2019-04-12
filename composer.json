@@ -1,6 +1,6 @@
 {
     "name": "murderxchip/trace",
-    "description": "Laravel/Lumen 链路日志SDK",
+    "description": "A trace logger SDK for http request between Laravel/Lumen apps by supplying enhanced GuzzleClient implementation",
     "type": "library",
     "version": "v1.0.1",
     "require": {
@@ -12,7 +12,7 @@
     "authors": [
         {
             "name": "qinming",
-            "email": "qinming@100tal.com"
+            "email": "7853151@qq.com"
         }
     ],
     "minimum-stability": "dev",
