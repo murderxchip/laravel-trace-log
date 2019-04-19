@@ -44,7 +44,7 @@ class HttpClient extends Client
             static::$traceId = app('request')->header(static::$headerTraceId) ?? static::genTraceId();
             $indexHeader = app('request')->header(static::$headerTraceIndex) ?? '0';
             static::$traceIndex = static::getNextIndex($indexHeader);
-            static::$tracePath = app('request')->header(static::$headerTracePath) ?? $_SERVER['SERVER_NAME'];
+            static::$tracePath = app('request')->header(static::$headerTracePath) ?? ($_SERVER['SERVER_NAME'] ?? 'Unknown');
 
             if (static::$tracePath === false || !static::$tracePathSave) {
                 static::$tracePath .= '/' . env('APP_NAME', $_SERVER['HTTP_HOST'] ?? 'unknown');
@@ -66,7 +66,7 @@ class HttpClient extends Client
         }));
 
         $config['handler'] = $stack;
-        $config['timeout'] = 5;
+//        $config['timeout'] = 5;
 
         parent::__construct($config);
     }

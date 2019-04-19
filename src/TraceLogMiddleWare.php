@@ -4,7 +4,6 @@ namespace Cactus\Trace;
 
 use Carbon\Carbon;
 use Closure;
-use Illuminate\Support\Facades\Log;
 
 class TraceLogMiddleWare
 {
@@ -48,19 +47,20 @@ class TraceLogMiddleWare
         }
 
         $responseText = $response->getContent();
+        $responseJson = @json_decode($response->getContent(), true);
 
-        $logEnd = [
-            'Response' => $responseText,
-            'Status' => $response->getStatusCode(),
-            'ResponseTime' => Carbon::now()->format('Y-m-d H:i:s'),
-            'ElapseTime' => $elapseTime,
-        ];
+        if(isset($responseJson['debug'])){
+            $log['debug'] = $responseJson['debug'];
+//            $log['debug']['message'] = $responseJson['message'];
+            $log['Response'] = $responseJson['message'];
+        }else{
+            $log['Response'] = $responseText;
+            $log['Status'] = $response->getStatusCode();
+            $log['ResponseTime'] = Carbon::now()->format('Y-m-d H:i:s');
+            $log['ElapseTime'] = $elapseTime;
+        }
 
-        $log = array_merge($log, $logEnd);
-
-        Log::info('apilog', [
-            'apitrace' =>  $log
-        ]);
+        app('apiLogger')->info('apiLogger', $log);
         return $response;
     }
 }
