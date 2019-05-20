@@ -45,17 +45,19 @@ class TraceLogServiceProvider extends ServiceProvider
             return $monolog;
         });
 
-        $this->app->configureMonologUsing(function ($monolog) {
-            $maxFiles = 20;
-            $handlers = [];
-            $handlers[] = (new RotatingFileHandler(storage_path() . "/logs/".$this->getLogFilename('line'), $maxFiles))
-                ->setFormatter(new TraceLineFormatter());
+        if(env('ENABLE_DEBUG_TRACE', 1)) {
+            $this->app->configureMonologUsing(function ($monolog) {
+                $maxFiles = 20;
+                $handlers = [];
+                $handlers[] = (new RotatingFileHandler(storage_path() . "/logs/" . $this->getLogFilename('line'), $maxFiles))
+                    ->setFormatter(new TraceLineFormatter());
 
-            $monolog->setHandlers($handlers);
-            $monolog->pushProcessor(new TraceRequestProcessor(app('rpcClient')));
+                $monolog->setHandlers($handlers);
+                $monolog->pushProcessor(new TraceRequestProcessor(app('rpcClient')));
 //            $monolog->pushProcessor(new IntrospectionProcessor());
 
-            return $monolog;
-        });
+                return $monolog;
+            });
+        }
     }
 }

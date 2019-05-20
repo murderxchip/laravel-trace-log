@@ -38,13 +38,30 @@ class HttpClient extends Client
         self::$debug = $debug;
     }
 
+    protected function getRequestHeader($header = '', $default = ''){
+        $header = app('request')->header($header);
+        if(!$header){
+            return $default;
+        }
+
+        if(is_array($header)){
+            return $header[0] ?? $default;
+        }
+
+        if(is_string($header)){
+            return $header;
+        }
+
+        return $default;
+    }
+
     public function __construct(array $config = [])
     {
         if(!static::$init) {
-            static::$traceId = app('request')->header(static::$headerTraceId) ?? static::genTraceId();
-            $indexHeader = app('request')->header(static::$headerTraceIndex) ?? '0';
+            static::$traceId = $this->getRequestHeader(static::$headerTraceId, static::genTraceId());
+            $indexHeader = $this->getRequestHeader(static::$headerTraceIndex,'0');
             static::$traceIndex = static::getNextIndex($indexHeader);
-            static::$tracePath = app('request')->header(static::$headerTracePath) ?? ($_SERVER['SERVER_NAME'] ?? 'Unknown');
+            static::$tracePath = $this->getRequestHeader(static::$headerTracePath, ($_SERVER['SERVER_NAME'] ?? 'unknown'));
 
             if (static::$tracePath === false || !static::$tracePathSave) {
                 static::$tracePath .= '/' . env('APP_NAME', $_SERVER['HTTP_HOST'] ?? 'unknown');

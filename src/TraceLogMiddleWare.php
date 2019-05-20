@@ -40,27 +40,26 @@ class TraceLogMiddleWare
 
         $end_time = microtime(true);
         $elapse = $end_time - $start_time;
-        if ($elapse < 1) {
-            $elapseTime = intval($elapse * 1000) . 'ms';
-        } else {
-            $elapseTime = number_format($elapse, 2) . 's';
-        }
+        $elapseTime = intval($elapse * 1000);
 
         $responseText = $response->getContent();
         $responseJson = @json_decode($response->getContent(), true);
 
-        if(isset($responseJson['debug'])){
+        if (isset($responseJson['debug'])) {
             $log['debug'] = $responseJson['debug'];
-//            $log['debug']['message'] = $responseJson['message'];
             $log['Response'] = $responseJson['message'];
-        }else{
+        } else {
             $log['Response'] = $responseText;
-            $log['Status'] = $response->getStatusCode();
-            $log['ResponseTime'] = Carbon::now()->format('Y-m-d H:i:s');
-            $log['ElapseTime'] = $elapseTime;
         }
 
-        app('apiLogger')->info('apiLogger', $log);
+        $log['Status'] = $response->getStatusCode();
+        $log['ResponseTime'] = Carbon::now()->format('Y-m-d H:i:s');
+        $log['ElapseTime'] = $elapseTime;
+//        $log['ElapseMS'] = $elapseTime;
+
+        if(is_object(app('apiLogger'))){
+            app('apiLogger')->info('apiLogger', $log);
+        }
         return $response;
     }
 }
