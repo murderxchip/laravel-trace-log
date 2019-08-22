@@ -85,3 +85,10 @@
 }
 ```
 Trace信息会通过header进行传递
+
+
+####ChangeLog
+1.2.1 版本变更
+1. trace id 精度提高
+2. 修复trace index无效问题
+3. response增加traceid返回

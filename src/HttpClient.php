@@ -18,13 +18,18 @@ class HttpClient extends Client
 {
     static $indexCounter = 1;
     static $traceId;
+
+    /**
+     * @var TraceIndex
+     */
     static $traceIndex;
+
     static $tracePath;
     static $tracePathSave = false;
 
-    static $headerTraceId = 'TRACEID';
+    static $headerTraceId    = 'TRACEID';
     static $headerTraceIndex = 'TRACEINDEX';
-    static $headerTracePath = 'TRACEPATH';
+    static $headerTracePath  = 'TRACEPATH';
 
     static $debug = false;
 
@@ -33,22 +38,23 @@ class HttpClient extends Client
     /**
      * @param bool $debug
      */
-    public static function setDebug(bool $debug): void
+    public static function setDebug(bool $debug)
     {
         self::$debug = $debug;
     }
 
-    protected function getRequestHeader($header = '', $default = ''){
+    protected function getRequestHeader($header = '', $default = '')
+    {
         $header = app('request')->header($header);
-        if(!$header){
+        if (!$header) {
             return $default;
         }
 
-        if(is_array($header)){
+        if (is_array($header)) {
             return $header[0] ?? $default;
         }
 
-        if(is_string($header)){
+        if (is_string($header)) {
             return $header;
         }
 
@@ -57,14 +63,16 @@ class HttpClient extends Client
 
     public function __construct(array $config = [])
     {
-        if(!static::$init) {
+        if (!static::$init) {
             static::$traceId = $this->getRequestHeader(static::$headerTraceId, static::genTraceId());
-            $indexHeader = $this->getRequestHeader(static::$headerTraceIndex,'0');
-            static::$traceIndex = static::getNextIndex($indexHeader);
-            static::$tracePath = $this->getRequestHeader(static::$headerTracePath, ($_SERVER['SERVER_NAME'] ?? 'unknown'));
+
+            $indexHeader     = $this->getRequestHeader(static::$headerTraceIndex, '');
+            static::$traceIndex = new TraceIndex($indexHeader);
+
+            static::$tracePath  = $this->getRequestHeader(static::$headerTracePath, ($_SERVER['SERVER_NAME'] ?? 'unknown'));
 
             if (static::$tracePath === false || !static::$tracePathSave) {
-                static::$tracePath .= '/' . env('APP_NAME', $_SERVER['HTTP_HOST'] ?? 'unknown');
+                static::$tracePath     .= '/' . env('APP_NAME', $_SERVER['HTTP_HOST'] ?? 'unknown');
                 static::$tracePathSave = true;
             }
 
@@ -75,10 +83,10 @@ class HttpClient extends Client
         $stack->push(Middleware::mapRequest(function (RequestInterface $request) {
 
             if (static::$debug) {
-                echo '[trace] - ' . static::$traceId . ' - ' . static::$traceIndex . ' - ' . static::$tracePath . PHP_EOL;
+                echo '[trace] - ' . static::$traceId . ' - ' . static::$traceIndex->getIndex() . ' - ' . static::$tracePath . PHP_EOL;
             }
             return $request->withHeader(static::$headerTraceId, static::$traceId)
-                ->withHeader(static::$headerTraceIndex, static::$traceIndex)
+                ->withHeader(static::$headerTraceIndex, static::$traceIndex->getIndex())
                 ->withHeader(static::$headerTracePath, static::$tracePath);
         }));
 
@@ -88,25 +96,24 @@ class HttpClient extends Client
         parent::__construct($config);
     }
 
+    public function request($method, $uri = '', array $options = [])
+    {
+        static::$traceIndex->incr();
+
+        return parent::request($method, $uri, $options);
+    }
+
     public static function genTraceId()
     {
-        return static::$traceId ?? uniqid('trace:' . time());
+        return static::$traceId ?? uniqid('tx' . microtime(true) * 10000);
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public static function getTraceIndex()
     {
-        return self::$traceIndex;
-    }
-
-    public static function getNextIndex($index = '0')
-    {
-        $ret = $index . '.' . static::$indexCounter;
-        static::$indexCounter++;
-
-        return $ret;
+        return self::$traceIndex->getIndex();
     }
 
     /**

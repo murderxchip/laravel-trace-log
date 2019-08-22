@@ -2,7 +2,7 @@
     "name": "murderxchip/trace",
     "description": "基于HTTP的链路日志跟踪Laravel/Lumen插件，A trace logger SDK for http request between Laravel/Lumen apps by supplying enhanced GuzzleClient implementation",
     "type": "library",
-    "version": "1.1.7",
+    "version": "1.2.1",
     "require": {
         "laravel/lumen-framework": "5.5.*",
         "guzzlehttp/guzzle": "~6.0",
