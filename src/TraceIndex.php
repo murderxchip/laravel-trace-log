@@ -16,10 +16,10 @@ class TraceIndex
     public function __construct($parentIndex = NULL)
     {
         if (!$parentIndex || $parentIndex == '') {
-            $this->index = [1, 0];
+            $this->index = [1, 1];
         } else {
             $a = explode('.', $parentIndex);
-            array_push($a, 0);
+            array_push($a, 1);
             $this->index = $a;
         }
         $this->level = count($this->index);
