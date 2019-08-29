@@ -55,19 +55,17 @@ class TraceLogMiddleWare
         $log['ResponseTime'] = Carbon::now()->format('Y-m-d H:i:s');
         $log['ElapseTime']   = $elapseTime;
 
-        if (is_object(app('apiLogger'))) {
-            app('apiLogger')->info('apiLogger', $log);
+        $log['Sql'] = isset($GLOBALS['sql_all']) && is_array($GLOBALS['sql_all']) ? json_encode($GLOBALS['sql_all']) : '';
+
+        if (is_object(app(TraceLogFactory::API_LOGGER_NAME))) {
+            app(TraceLogFactory::API_LOGGER_NAME)->info(TraceLogFactory::API_LOGGER_NAME, $log);
         }
 
         //traceid返回
         if (method_exists($response, 'getContent')) {
-            $responseData = @json_decode($response->getContent(), true);
-            if (is_array($responseData)) {
-                $responseData['trace'] = [
-                    'traceId' => app('rpcClient')->getTraceId(),
-                ];
-                $response->setContent(json_encode($responseData));
-            }
+            $responseData = @json_decode($response->getContent());
+            $responseData->trace = (object)['traceId' => TraceLogFactory::getHttpClient()::getTraceId()];
+            $response->setContent(json_encode($responseData));
         }
 
         return $response;

@@ -28,32 +28,32 @@ class TraceLogServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton('rpcClient', function () {
+        $this->app->singleton(TraceLogFactory::CLIENT_NAME, function () {
             return new HttpClient();
         });
 
-        $this->app->singleton('apiLogger', function () {
-            $maxFiles = 20;
-            $monolog = new Logger('apiLogger');
-            $handlers = [];
+        $this->app->singleton(TraceLogFactory::API_LOGGER_NAME, function () {
+            $maxFiles   = 20;
+            $monolog    = new Logger(TraceLogFactory::API_LOGGER_NAME);
+            $handlers   = [];
             $handlers[] = (new RotatingFileHandler(storage_path() . "/logs/api/" . $this->getLogFilename('trace'), $maxFiles))
                 ->setFormatter(new JsonFormatter());
             $monolog->setHandlers($handlers);
-            $monolog->pushProcessor(new TraceRequestProcessor(app('rpcClient')));
+            $monolog->pushProcessor(new TraceRequestProcessor(TraceLogFactory::getHttpClient()));
             $monolog->pushProcessor(new UidProcessor(24));
 
             return $monolog;
         });
 
-        if(env('ENABLE_DEBUG_TRACE', 1)) {
+        if (method_exists($this->app, 'configureMonologUsing')) {
             $this->app->configureMonologUsing(function ($monolog) {
-                $maxFiles = 20;
-                $handlers = [];
+                $maxFiles   = 20;
+                $handlers   = [];
                 $handlers[] = (new RotatingFileHandler(storage_path() . "/logs/" . $this->getLogFilename('line'), $maxFiles))
                     ->setFormatter(new TraceLineFormatter());
 
                 $monolog->setHandlers($handlers);
-                $monolog->pushProcessor(new TraceRequestProcessor(app('rpcClient')));
+                $monolog->pushProcessor(new TraceRequestProcessor(TraceLogFactory::getHttpClient()));
 //            $monolog->pushProcessor(new IntrospectionProcessor());
 
                 return $monolog;
